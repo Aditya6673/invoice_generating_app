@@ -1,0 +1,22 @@
+{
+  "name": "invoice-platform-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "node --test tests/billing.test.js",
+    "test:e2e": "node tests/browser.test.js"
+  },
+  "dependencies": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-router-dom": "6.30.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "6.0.5",
+    "vite": "8.2.0"
+  }
+}

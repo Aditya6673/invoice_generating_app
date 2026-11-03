@@ -1,0 +1,25 @@
+# Environment files and secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Frontend dependencies and generated output
+**/node_modules/
+**/dist/
+**/coverage/
+**/test-results/
+**/playwright-report/
+
+# Java and Maven build output
+**/target/
+
+# Locally uploaded files
+/backend/storage/
+
+# Logs
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
+.vscode

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Payment Reminder</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 24px;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        .header {
+            background-color: #2b6cb0;
+            color: #ffffff;
+            padding: 24px 32px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .content {
+            padding: 32px;
+        }
+        .greeting {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .milestone-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 16px 0;
+        }
+        .badge-due-soon {
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+            border: 1px solid #bee3f8;
+        }
+        .badge-due-today {
+            background-color: #fefcbf;
+            color: #975a16;
+            border: 1px solid #faf089;
+        }
+        .badge-overdue {
+            background-color: #fed7d7;
+            color: #9b2c2c;
+            border: 1px solid #feb2b2;
+        }
+        .invoice-card {
+            background-color: #f7fafc;
+            border: 1px solid #edf2f7;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .invoice-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .invoice-row:last-child {
+            border-bottom: none;
+            padding-top: 12px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .label {
+            color: #718096;
+        }
+        .value {
+            color: #1a202c;
+            font-weight: 500;
+            text-align: right;
+        }
+        .amount-due-highlight {
+            color: #c53030;
+        }
+        .footer {
+            padding: 24px 32px;
+            background-color: #edf2f7;
+            border-top: 1px solid #e2e8f0;
+            font-size: 14px;
+            color: #4a5568;
+        }
+        .footer p {
+            margin: 4px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1 th:text="'Payment Reminder from ' + ${businessName}">Payment Reminder</h1>
+    </div>
+
+    <div class="content">
+        <div class="greeting">
+            Dear <span th:text="${customerName}">Customer</span>,
+        </div>
+
+        <p>
+            This is a reminder regarding Invoice <strong th:text="${invoiceNumber}">INV-001</strong>
+            dated <span th:text="${issueDate}">2026-11-01</span> for
+            <strong th:text="${grandTotal} + ' INR'">10,000.00 INR</strong>.
+        </p>
+
+        <!-- Conditional text based on milestone -->
+        <div th:if="${#strings.startsWith(milestone, 'DUE_IN_')}">
+            <div class="milestone-badge badge-due-soon">Payment Due Soon</div>
+            <p>
+                This is a friendly reminder that payment for this invoice is scheduled to be due on
+                <strong th:text="${dueDate}">2026-11-05</strong>.
+            </p>
+        </div>
+
+        <div th:if="${milestone == 'DUE_TODAY'}">
+            <div class="milestone-badge badge-due-today">Payment Due Today</div>
+            <p>
+                Please note that payment for this invoice is <strong>due today</strong>
+                (<span th:text="${dueDate}">2026-11-02</span>).
+            </p>
+        </div>
+
+        <div th:if="${#strings.startsWith(milestone, 'OVERDUE_')}">
+            <div class="milestone-badge badge-overdue">Invoice Overdue</div>
+            <p>
+                Our records show that this invoice is now <strong>overdue</strong>.
+                It was due on <span th:text="${dueDate}">2026-10-25</span>.
+                We kindly request you to process the payment at your earliest convenience.
+            </p>
+        </div>
+
+        <div th:if="${milestone == 'MANUAL'}">
+            <div class="milestone-badge badge-due-soon">Payment Notice</div>
+            <p>
+                Please review the invoice details below and arrange for payment of the balance due.
+            </p>
+        </div>
+
+        <div class="invoice-card">
+            <div class="invoice-row">
+                <span class="label">Invoice Number:</span>
+                <span class="value" th:text="${invoiceNumber}">INV-001</span>
+            </div>
+            <div class="invoice-row">
+                <span class="label">Issue Date:</span>
+                <span class="value" th:text="${issueDate}">2026-11-01</span>
+            </div>
+            <div class="invoice-row">
+                <span class="label">Due Date:</span>
+                <span class="value" th:text="${dueDate}">2026-11-05</span>
+            </div>
+            <div class="invoice-row">
+                <span class="label">Total Amount:</span>
+                <span class="value" th:text="${grandTotal} + ' INR'">10,000.00 INR</span>
+            </div>
+            <div class="invoice-row">
+                <span class="label">Amount Due:</span>
+                <span class="value amount-due-highlight" th:text="${balance} + ' INR'">10,000.00 INR</span>
+            </div>
+        </div>
+
+        <p>Please find the invoice attached for your reference and records.</p>
+        <p>If you have already processed this payment, please disregard this reminder.</p>
+    </div>
+
+    <div class="footer">
+        <p>Regards,</p>
+        <p><strong th:text="${businessName}">Business Name</strong></p>
+    </div>
+</div>
+</body>
+</html>

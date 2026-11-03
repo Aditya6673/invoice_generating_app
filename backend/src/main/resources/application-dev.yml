@@ -1,0 +1,37 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/billing
+    username: billing
+    password: billing
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+  mail:
+    host: localhost
+    port: 1025
+
+  flyway:
+    clean-disabled: false
+
+app:
+  jwt:
+    secret: DevOnlySecretKeyThatIsLongEnoughForHS256AlgorithmRequirement256Bits!!
+  reminder:
+    enabled: false
+  notification:
+    channel: console   # console | email
+
+logging:
+  level:
+    com.rishav.billing: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

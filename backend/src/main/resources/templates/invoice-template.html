@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Invoice</title>
+    <style type="text/css">
+        @page {
+            size: A4 portrait;
+            margin: 15mm 12mm 15mm 12mm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 10pt;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            width: 100%;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #2b5797;
+            padding-bottom: 10px;
+        }
+        .header-table {
+            width: 100%;
+            border: none;
+        }
+        .header-table td {
+            border: none;
+            padding: 0;
+            vertical-align: top;
+        }
+        .business-name {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #2b5797;
+            margin: 0 0 5px 0;
+        }
+        .business-details {
+            font-size: 9pt;
+            color: #666;
+            line-height: 1.5;
+        }
+        .invoice-title {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #2b5797;
+            text-align: right;
+        }
+        .meta-table {
+            width: 100%;
+            border: none;
+            margin-bottom: 20px;
+        }
+        .meta-table td {
+            border: none;
+            padding: 2px 8px;
+            vertical-align: top;
+        }
+        .section-title {
+            font-size: 9pt;
+            font-weight: bold;
+            color: #2b5797;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .customer-box {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-left: 3px solid #2b5797;
+            margin-bottom: 15px;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            -fs-table-paginate: paginate;
+        }
+        .items-table th {
+            background-color: #2b5797;
+            color: #ffffff;
+            font-size: 8pt;
+            font-weight: bold;
+            padding: 6px 8px;
+            text-align: left;
+            text-transform: uppercase;
+        }
+        .items-table th.right, .items-table td.right {
+            text-align: right;
+        }
+        .items-table td {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 6px 8px;
+            font-size: 9pt;
+        }
+        .items-table tr:nth-child(even) td {
+            background-color: #f8f9fa;
+        }
+        .totals-section {
+            width: 100%;
+            border: none;
+            margin-top: 15px;
+        }
+        .totals-section td {
+            border: none;
+            padding: 3px 8px;
+        }
+        .totals-table {
+            width: 300px;
+            float: right;
+            border: none;
+        }
+        .totals-table td {
+            padding: 4px 8px;
+            border: none;
+            font-size: 9pt;
+        }
+        .totals-table td.right {
+            text-align: right;
+        }
+        .totals-table .grand-total td {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #2b5797;
+            border-top: 2px solid #2b5797;
+            padding-top: 8px;
+        }
+        .totals-table .balance td {
+            font-weight: bold;
+            color: #d9534f;
+        }
+        .bank-details {
+            margin-top: 30px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            font-size: 9pt;
+        }
+        .notes-section {
+            margin-top: 15px;
+            font-size: 9pt;
+            color: #666;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 8pt;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <table class="header-table">
+            <tr>
+                <td style="width: 60%;">
+                    <div class="business-name" th:text="${business.name}">Business Name</div>
+                    <div class="business-details">
+                        <span th:if="${business.address}" th:text="${business.address}">Address</span><br/>
+                        <span th:if="${business.gstin}">GSTIN: <span th:text="${business.gstin}">GSTIN</span></span>
+                    </div>
+                </td>
+                <td style="width: 40%; text-align: right;">
+                    <div class="invoice-title">INVOICE</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Invoice Meta + Customer Info -->
+    <table class="meta-table">
+        <tr>
+            <td style="width: 50%;">
+                <div class="section-title">Bill To</div>
+                <div class="customer-box">
+                    <strong th:text="${invoice.customerName}">Customer Name</strong><br/>
+                    <span th:if="${invoice.customerAddress}" th:text="${invoice.customerAddress}">Address</span><br/>
+                    <span th:if="${invoice.customerState}">State: <span th:text="${invoice.customerState}">State</span>
+                        (<span th:text="${invoice.customerStateCode}">SC</span>)</span><br/>
+                    <span th:if="${invoice.customerGstin}">GSTIN: <span th:text="${invoice.customerGstin}">GSTIN</span></span>
+                </div>
+            </td>
+            <td style="width: 50%; text-align: right;">
+                <table style="float: right; border: none;">
+                    <tr>
+                        <td style="border: none; font-weight: bold; padding: 3px 10px;">Invoice No:</td>
+                        <td style="border: none; padding: 3px 10px;" th:text="${invoice.invoiceNumber}">INV/2026-27/0001</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; font-weight: bold; padding: 3px 10px;">Date:</td>
+                        <td style="border: none; padding: 3px 10px;" th:text="${invoice.issueDate}">2026-11-02</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; font-weight: bold; padding: 3px 10px;">Due Date:</td>
+                        <td style="border: none; padding: 3px 10px;" th:text="${invoice.dueDate}">2026-12-02</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; font-weight: bold; padding: 3px 10px;">Status:</td>
+                        <td style="border: none; padding: 3px 10px;" th:text="${invoice.status}">ISSUED</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Line Items - Intra-State (CGST + SGST) -->
+    <table class="items-table" th:if="${isIntraState}">
+        <thead>
+            <tr>
+                <th style="width: 5%;">#</th>
+                <th style="width: 25%;">Description</th>
+                <th style="width: 8%;">HSN/SAC</th>
+                <th class="right" style="width: 6%;">Qty</th>
+                <th class="right" style="width: 10%;">Unit Price</th>
+                <th class="right" style="width: 8%;">Discount</th>
+                <th class="right" style="width: 10%;">Taxable Amt</th>
+                <th class="right" style="width: 8%;">CGST</th>
+                <th class="right" style="width: 8%;">SGST</th>
+                <th class="right" style="width: 12%;">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="line, stat : ${lines}">
+                <td th:text="${stat.index + 1}">1</td>
+                <td th:text="${line.description}">Item</td>
+                <td th:text="${line.hsnSacCode}">-</td>
+                <td class="right" th:text="${line.quantity}">1</td>
+                <td class="right" th:text="${#numbers.formatDecimal(line.unitPrice, 1, 2)}">0.00</td>
+                <td class="right" th:text="${#numbers.formatDecimal(line.discountAmount, 1, 2)}">0.00</td>
+                <td class="right" th:text="${#numbers.formatDecimal(line.taxableAmount, 1, 2)}">0.00</td>
+                <td class="right" th:text="${#numbers.formatDecimal(line.cgstAmount, 1, 2)}">0.00</td>
+                <td class="right" th:text="${#numbers.formatDecimal(line.sgstAmount, 1, 2)}">0.00</td>
+                <td class="right" th:text="${#numbers.formatDecimal(line.lineTotal, 1, 2)}">0.00</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Line Items - Inter-State (IGST) -->
+    <table class="items-table" th:unless="${isIntraState}">
+        <thead>
+            <tr>
+                <th style="width: 5%;">#</th>
+                <th style="width: 28%;">Description</th>
+                <th style="width: 8%;">HSN/SAC</th>
+                <th class="right" style="width: 7%;">Qty</th>
+                <th class="right" style="width: 12%;">Unit Price</th>
+                <th class="right" style="width: 10%;">Discount</th>
+                <th class="right" style="width: 10%;">Taxable Amt</th>
+                <th class="right" style="width: 8%;">IGST</th>
+                <th class="right" style="width: 12%;">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="line, stat : ${lines}">
+                <td th:text="${stat.index + 1}">1</td>
+                <td th:text="${line.description}">Item</td>
+                <td th:text="${line.hsnSacCode}">-</td>
+                <td class="right" th:text="${line.quantity}">1</td>
+                <td class="right" th:text="${#numbers.formatDecimal(line.unitPrice, 1, 2)}">0.00</td>
+                <td class="right" th:text="${#numbers.formatDecimal(line.discountAmount, 1, 2)}">0.00</td>
+                <td class="right" th:text="${#numbers.formatDecimal(line.taxableAmount, 1, 2)}">0.00</td>
+                <td class="right" th:text="${#numbers.formatDecimal(line.igstAmount, 1, 2)}">0.00</td>
+                <td class="right" th:text="${#numbers.formatDecimal(line.lineTotal, 1, 2)}">0.00</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Totals -->
+    <table class="totals-table" style="margin-left: auto;">
+        <tr>
+            <td>Subtotal:</td>
+            <td class="right" th:text="${#numbers.formatDecimal(invoice.subtotal, 1, 2)}">0.00</td>
+        </tr>
+        <tr th:if="${invoice.discountTotal.compareTo(T(java.math.BigDecimal).ZERO) > 0}">
+            <td>Discount:</td>
+            <td class="right" th:text="'-' + ${#numbers.formatDecimal(invoice.discountTotal, 1, 2)}">0.00</td>
+        </tr>
+        <tr th:if="${isIntraState}">
+            <td>CGST:</td>
+            <td class="right" th:text="${#numbers.formatDecimal(invoice.taxTotal / 2, 1, 2)}">0.00</td>
+        </tr>
+        <tr th:if="${isIntraState}">
+            <td>SGST:</td>
+            <td class="right" th:text="${#numbers.formatDecimal(invoice.taxTotal / 2, 1, 2)}">0.00</td>
+        </tr>
+        <tr th:unless="${isIntraState}">
+            <td>IGST:</td>
+            <td class="right" th:text="${#numbers.formatDecimal(invoice.taxTotal, 1, 2)}">0.00</td>
+        </tr>
+        <tr class="grand-total">
+            <td>Grand Total (INR):</td>
+            <td class="right" th:text="${#numbers.formatDecimal(invoice.grandTotal, 1, 2)}">0.00</td>
+        </tr>
+        <tr th:if="${invoice.amountPaid.compareTo(T(java.math.BigDecimal).ZERO) > 0}">
+            <td>Amount Paid:</td>
+            <td class="right" th:text="${#numbers.formatDecimal(invoice.amountPaid, 1, 2)}">0.00</td>
+        </tr>
+        <tr class="balance" th:if="${balanceDue.compareTo(T(java.math.BigDecimal).ZERO) > 0}">
+            <td>Balance Due:</td>
+            <td class="right" th:text="${#numbers.formatDecimal(balanceDue, 1, 2)}">0.00</td>
+        </tr>
+    </table>
+
+    <div style="clear: both;"> </div>
+
+    <!-- Bank Details -->
+    <div class="bank-details" th:if="${business.bankName != null}">
+        <div class="section-title">Bank Details</div>
+        <strong>Bank:</strong> <span th:text="${business.bankName}">Bank</span><br/>
+        <strong>Account No:</strong> <span th:text="${business.bankAccount}">Account</span><br/>
+        <strong>IFSC:</strong> <span th:text="${business.bankIfsc}">IFSC</span><br/>
+    </div>
+
+    <!-- Notes -->
+    <div class="notes-section" th:if="${invoice.notes != null and !invoice.notes.isEmpty()}">
+        <div class="section-title">Notes</div>
+        <span th:text="${invoice.notes}">Notes</span>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>This is a computer-generated invoice.</p>
+    </div>
+
+</body>
+</html>
